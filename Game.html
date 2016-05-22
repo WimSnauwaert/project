@@ -1,0 +1,570 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Project MI2</title>
+    <link rel="stylesheet" type="text/css" href="JS/jquery.mobile-1.4.5.css"/>
+    <link rel="stylesheet" type="text/css" href="CSS/style.css">
+    <script type="text/javascript" src="JS/jquery-1.12.1.js"></script>
+    <script type="text/javascript" src="JS/jquery.mobile-1.4.5.js"></script>
+    <script>
+        "use strict";
+/*global $ */
+var antwoord = "", i, adres, gold, klikSchade, diamonds, heroSouls, stage, behaaldLevel, hero0, hero1, hero2,  hero3, hero4, hero5, hero6, hero7, hero8, hero9, hero10, baseMonsterLife, monsterLife, bossLife, currentMonsterLife, goldDrop, schadePerSeconde, loginId, monsterTeller, goldPotion, diamondPotion, damageSword, clickSword, ancient1LVL, ancient2LVL, statsTotalClicks, statsMonstersKills, statsBossKills, statsAscensions, statsHighestLVL, goldPotionGebruik, diamondPotionGebruik, damageSwordGebruik, clickSwordGebruik, ancient1Value, ancient2Value, bossTeller, issBoss, timer, baas, levensBalk, procentueelLeven, geslaagdLevel, heroName, heroCost, heroDamage, fps, levelWaarde, i, randomNumber, diamondGold, diamondDiamond, diamondDamage, diamondClick, goldTimer, diamondTimer, damageTimer, clickTimer, goldTimerFunctie, diamondTimerFunctie, damageTimerFunctie, clickTimerFunctie, klikLevel, ascendHerosouls;
+
+$(document).ready(function() {
+    
+    $("#speel").click(function() {
+        // de JSON data ophalen
+        $.ajax({
+            // The 'type' property sets the HTTP method.
+            // A value of 'PUT' or 'DELETE' will trigger a preflight request.
+            type: "GET",
+
+            // The URL to make the request to.
+            url: "JSON/test.json",
+            // The 'contentType' property sets the 'Content-Type' header.
+            // The JQuery default for this property is
+            // 'application/x-www-form-urlencoded; charset=UTF-8', which does not trigger
+            // a preflight. If you set this value to anything other than
+            // application/x-www-form-urlencoded, multipart/form-data, or text/plain,
+            // you will trigger a preflight request.
+            contentType: 'text/plain',
+            dataType: "json",
+            xhrFields: {
+                // The 'xhrFields' property sets additional fields on the XMLHttpRequest.
+                // This can be used to set the 'withCredentials' property.
+                // Set the value to 'true' if you'd like to pass cookies to the server.
+                // If this is enabled, your server must respond with the header
+                // 'Access-Control-Allow-Credentials: true'.
+                withCredentials: false
+            },
+            headers: {
+                // Set any custom headers here.
+                // If you set any non-simple headers, your server must include these
+                // headers in the 'Access-Control-Allow-Headers' response header.
+                // "permissions": [ "http://*.html5rocks.com"]
+            },
+            success: checkLogin,
+            error: function() {
+                // Here's where you handle an error response.
+                // Note that if the error was due to a CORS issue,
+                // this function will still fire, but there won't be any additional
+                // information about the error.
+            }
+        });
+    });
+
+    function checkLogin(response) {
+        // gebruik aub de inspector in je browser om eens na te kijken
+        // wat nu exact de inhoud van response is...
+        
+        var nieuweGebruiker = $("#user").val();
+        var nieuwePass = $("#password").val();
+        
+        for (i = 0; i < response.USERS.length; i += 1) {
+
+            adres = response.USERS[i];
+
+            var bestaandeGebruiker = adres.user;
+            var bestaandPass = adres.pass;
+            
+            if (bestaandeGebruiker == nieuweGebruiker) {
+                if (bestaandPass == nieuwePass) {
+                    $("#monsterTeller").text(monsterTeller + "/10");
+                    initialiseren();
+                    loginId = adres.id;
+                    gold = adres.gold;
+                    klikSchade = adres.klikschade;
+                    heroSouls = adres.herosouls;
+                    diamonds = adres.diamonds;
+                    behaaldLevel = adres.behaaldlvl;
+                    stage = adres.lvl;
+                    klikLevel = adres.kliklevel;
+                    hero0.heroLevel = adres.hero0lvl;
+                    hero1.heroLevel = adres.hero1lvl;
+                    hero2.heroLevel = adres.hero2lvl;
+                    hero3.heroLevel = adres.hero3lvl;
+                    hero4.heroLevel = adres.hero4lvl;
+                    hero5.heroLevel = adres.hero5lvl;
+                    hero6.heroLevel = adres.hero6lvl;
+                    hero7.heroLevel = adres.hero7lvl;
+                    hero8.heroLevel = adres.hero8lvl;
+                    hero9.heroLevel = adres.hero9lvl;
+                    hero10.heroLevel = adres.hero10lvl;
+                    hero0.beginwaarden(0);
+                    hero1.beginwaarden(1);
+                    hero2.beginwaarden(2);
+                    hero3.beginwaarden(3);
+                    hero4.beginwaarden(4);
+                    hero5.beginwaarden(5);
+                    hero6.beginwaarden(6);
+                    hero7.beginwaarden(7);
+                    hero8.beginwaarden(8);
+                    hero9.beginwaarden(9);
+                    hero10.beginwaarden(10);
+                    hero1.updateValues();
+                    goldPotion = adres.goldpotion;
+                    diamondPotion = adres.diamondpotion;
+                    damageSword = adres.damagesword;
+                    clickSword = adres.clicksword;
+                    ascendHerosouls = adres.getherosouls;
+                    ancient1LVL = adres.ancient1;
+                    ancient2LVL = adres.ancient2;
+                    statsTotalClicks = adres.statstotalkliks;
+                    statsMonstersKills = adres.statsmonsterskills;
+                    statsBossKills = adres.statsbosskills;
+                    statsAscensions = adres.statsascensions;
+                    statsHighestLVL = adres.statshighestlvl;
+                    monsterLife = Math.round((baseMonsterLife * (Math.pow(1.6, stage - 1))));
+                    bossLife = Math.round((baseMonsterLife * (Math.pow(1.6, stage - 1)) + (stage - 1) * 10) * 10);
+                    currentMonsterLife = monsterLife;
+                    goldDrop = Math.round(monsterLife / 15);
+                    if(stage % 5 ===0)
+                    {
+                        stage--;
+                        monsterTeller = 0;
+                        bossTeller = 0;
+                        $("#monsterTeller").text(monsterTeller + "/10");
+                        monsterLife = Math.round((baseMonsterLife * Math.pow(1.6, stage - 1)));
+                        currentMonsterLife = monsterLife;
+                        goldDrop = Math.round(monsterLife / 15);
+                        issBoss = false;
+                        $("#timer").text("");
+                        clearInterval(baas);
+                    }else
+                    {
+                        monsterTeller = 0;
+                        bossTeller = 0;
+                        $("#monsterTeller").text(monsterTeller + "/10");
+                        monsterLife = Math.round((baseMonsterLife * Math.pow(1.6, stage - 1)));
+                        currentMonsterLife = monsterLife;
+                        goldDrop = Math.round(monsterLife / 15);
+                        issBoss = false;
+                        $("#timer").text("");
+                        clearInterval(baas);
+                    }
+                    window.location = "http://localhost/Game/Game.html#spel";
+                }
+            }
+        }
+    }
+
+    $("#registerForm").keydown(function() {
+        $.ajax({
+            type: "GET",
+            url: "JSON/test.json",
+            contentType: 'text/plain',
+            dataType: "json",
+            xhrFields: {
+                withCredentials: false
+            },
+            headers: {},
+            success: checkForm,
+            error: function() {}
+        });
+    });
+    
+    function checkForm(response) {
+        
+        var registreerPass = $("#registreerPass").val();
+        var passCheck = false;
+        var userCheck = false;
+        
+        if (registreerPass == "") 
+        {
+            $("#passError").text("vul pass in");
+            $("#registerForm .ui-btn").css("display","none");
+            passCheck = false;
+        }else 
+        {
+            $("#passError").text("");
+            passCheck = true;
+        }
+        
+        for (i = 0; i < response.USERS.length; i += 1) 
+        {
+            adres = response.USERS[i];
+
+            var bestaandeGebruiker = adres.user;
+            var registreerNaam = $("#registreerNaam").val();
+            
+            if(registreerNaam == "")
+            {
+                $("#userError").text("Vul een gebruikersnaam in");
+                $("#registerForm .ui-btn").css("display","none");
+                userCheck = false;
+                break;
+            }else
+            {
+                if (bestaandeGebruiker == registreerNaam) 
+                {
+                    $("#userError").text("Gebruikersnaam bestaat al.");
+                    $("#registerForm .ui-btn").css("display","none");
+                    userCheck = false;
+                    break;
+                }else
+                {
+                    $("#userError").text("");
+                    userCheck = true;
+                }
+            }
+        }
+        
+        if(passCheck == true && userCheck == true)
+        {
+            $("#registerForm .ui-btn").css("display","block");
+        }
+        
+    }
+    
+    $("#save").on('click', function() {
+            $.post("PHP/opslagen.php",
+            {
+                id: loginId,
+                klikschade: klikSchade,
+                gold: gold,
+                herosouls: heroSouls,
+                diamonds: diamonds,
+                behaaldlevel: behaaldLevel,
+                level: stage,
+                kliklevel: klikLevel,
+                hero0: hero0.heroLevel,
+                hero1: hero1.heroLevel,
+                hero2: hero2.heroLevel,
+                hero3: hero3.heroLevel,
+                hero4: hero4.heroLevel,
+                hero5: hero5.heroLevel,
+                hero6: hero6.heroLevel,
+                hero7: hero7.heroLevel,
+                hero8: hero8.heroLevel,
+                hero9: hero9.heroLevel,
+                hero10: hero10.heroLevel,
+                goldpotion: goldPotion,
+                diamondpotion: diamondPotion,
+                damagesword: damageSword,
+                clicksword: clickSword,
+                getherosouls: ascendHerosouls,
+                ancient1: ancient1LVL,
+                ancient2: ancient2LVL,
+                statstotalkliks: statsTotalClicks,
+                statsmonsterskills: statsMonstersKills,
+                statsbosskills: statsBossKills,
+                statsascensions: statsAscensions,
+                statshighestlvl: statsHighestLVL                
+            })
+            console.log("werkt");
+        });
+    
+    function initialiseren()
+    {
+        antwoord = "";
+        i;
+        adres;
+        gold = 0;
+        klikSchade = 0;
+        diamonds = 0;
+        heroSouls = 0;
+        stage = 1;
+        klikLevel = 1;
+        behaaldLevel = 1;
+        hero0;
+        hero1;
+        hero2;
+        hero3;
+        hero4;
+        hero5;
+        hero6;
+        hero7;
+        hero8;
+        hero9;
+        hero10;
+        baseMonsterLife = 10;
+        monsterLife = 0;
+        bossLife = 0;
+        currentMonsterLife = 0;
+        goldDrop = 0;
+        schadePerSeconde = 0;
+        loginId = 0;
+        monsterTeller =0;
+        goldPotion = 0;
+        diamondPotion = 0;
+        damageSword = 0;
+        clickSword = 0;
+        ascendHerosouls = 0;
+        ancient1LVL = 0;
+        ancient2LVL = 0;
+        statsTotalClicks = 0;
+        statsMonstersKills = 0;
+        statsBossKills =0;
+        statsAscensions = 0;
+        statsHighestLVL = 0;
+        goldPotionGebruik = false;
+        diamondPotionGebruik = false;
+        damageSwordGebruik = false;
+        clickSwordGebruik = false;
+        ancient1Value = 0;
+        ancient2Value =0;
+        bossTeller = 0;
+        issBoss = false;
+        timer = 30;
+        baas;
+        levensBalk;
+        procentueelLeven;
+        geslaagdLevel;
+        heroName;
+        heroCost;
+        heroDamage;
+        fps;
+        levelWaarde;
+        randomNumber;
+        diamondGold =0;
+        diamondDiamond = 0;
+        diamondDamage = 0;
+        diamondClick =0;
+        goldTimer;
+        diamondTimer;
+        damageTimer;
+        clickTimer;
+        goldTimerFunctie;
+        diamondTimerFunctie;
+        damageTimerFunctie;
+        clickTimerFunctie;
+    }
+});
+</script>
+</head>
+
+<body>
+
+    <div data-role="page" id="inloggen">
+
+        <div data-role="header">
+            <h2>INLOGGEN</h2>
+        </div>
+
+        <div data-role="content">
+            <form>
+                Gebruikersnaam:
+                <br/>
+                <input type="text" name="user" id="user" /> Paswoord:
+                <br>
+                <input type="text" name="pass" id="password" />
+                <a href="" data-role="button" id="speel">SPEEL</a>
+            </form>
+        </div>
+
+        <div data-role="footer">
+            <a href="#registreren">Nog geen account? </a>
+        </div>
+
+    </div>
+
+    <div data-role="page" id="registreren">
+
+        <div data-role="header">
+            <h2>Registreren</h2>
+        </div>
+
+        <div data-role="content">
+            <form action="PHP/process.php" method="POST" id="registerForm">
+                Gebruikersnaam:
+                <br/>
+                <input type="text" name="userR" id="registreerNaam" />
+                <p id="userError"></p>
+                Paswoord:
+                <br/>
+                <input type="text" name="passR" id="registreerPass" />
+                <p id="passError"></p>
+                <br/>
+                <input type="submit" id="registreer" value="Registreer"/>
+            </form>
+        </div>
+
+        <div data-role="footer">
+        </div>
+
+    </div>
+
+    <div data-role="page" id="spel">
+
+        <div data-role="header">
+            <h2>PROJECT MI2 BY WIM SNAUWAERT</h2>
+        </div>
+
+        <div data-role="content">
+            <section class="fullWidth">
+            <section id="stats">
+                <section class="fullWidth">
+                    <h3>GOLD</h3>
+                    <p class="kak"></p>
+                    <p class="gold"></p>
+                </section>
+                <section class="fourthWidth">
+                    <h3>CLICK</h3>
+                    <p id="click">1</p>
+                </section>
+                <section class="fourthWidth">
+                    <h3>DPS</h3>
+                    <p id="dps">0</p>
+                </section>
+                <section class="fourthWidth">
+                    <h3>HS</h3>
+                    <p class="herosouls">0</p>
+                </section>
+                <section class="fourthWidth">
+                    <h3>DIAMONDS</h3>
+                    <p class="diamonds">0</p>
+                </section>
+            </section>
+            <section id="level">
+                <section class="fullWidth">
+                    <h3>LEVEL</h3>
+                    <a data-role="button" data-rel="dialog" data-transition="pop" id="prev" class="fourthWidth"><</a>
+                    <p class="fourthWidth" id="stage">1</p>
+                    <a data-role="button" data-rel="dialog" data-transition="pop" id="next" class="fourthWidth">></a>
+                </section>
+                <section id="monsterteller">
+                    <h3>TELLER</h3>
+                    <p id="monsterTeller">0/10</p>
+                </section>
+            </section>
+            </section>
+            
+            <section id="volledigLeven">
+                <div id="huidigLeven"></div>
+            </section>
+            
+            <p class="fullWidth" id="leven"></p>
+            <section id="monster">
+            </section>
+            <section>
+                <p id="test"></p>
+                <p id="timer"></p>
+            </section>
+        </div>
+
+        <div data-role="footer">
+            <a href="#helden" data-role="button" data-rel="dialog" data-transition="pop">HEROES</a>
+            <a href="#inventory" data-role="button" data-rel="dialog" data-transition="pop">INVENTORY</a>
+            <a href="#diamanten" data-role="button" data-rel="dialog" data-transition="pop">DIAMONDS</a>
+            <a href="#souls" data-role="button" data-rel="dialog" data-transition="pop">SOULS</a>
+            <a href="#stat" data-role="button" data-rel="dialog" data-transition="pop">STATS</a>
+            <a data-role="button" id="save">SAVE</a>
+        </div>
+
+    </div>
+
+    <div data-role="page" id="helden">
+
+        <div data-role="header">
+            <h2>HELDEN</h2>
+        </div>
+        <div data-role="content" id="heldenContainer">
+            <h3>GOLD</h3>
+            <p class="gold"></p>
+            <p id="verhoogklikschade"></p>
+            <a data-role="button" id="upgradeklikschade">UPGRADEN</a>
+        </div>
+
+        <div data-role="footer">
+        </div>
+
+    </div>
+
+    <div data-role="page" id="inventory">
+
+        <div data-role="header">
+            <h2>INVENTORY</h2>
+        </div>
+
+        <div data-role="content">
+            <h3>Potions</h3>
+            <p id="goldpotion">Goldpotion: increase gold drop with 25% for 10 minutes. (got )</p>
+            <p id="goldtimer"></p>
+            <a data-role="button" id="gebruikGoldPotion">GEBRUIKEN</a>
+            <p id="diamondpotion">Diamondpotion: all diamonds found are double for 5 minutes. (got )</p>
+            <p id="diamondtimer"></p>
+            <a data-role="button" id="gebruikDiamondPotion">GEBRUIKEN</a>
+            <h3>Weapons</h3> 
+            <p id="damagesword">Damagesword: damage per seconde increase with 50% for 7,5 minutes. (got )</p>
+            <p id="damagetimer"></p>
+            <a data-role="button" id="gebruikDamageSword">GEBRUIKEN</a>
+            <p id="clicksword">Clicksword: increase click damage with 50% for 7,5 minutes. (got )</p>
+            <p id="clicktimer"></p>
+            <a data-role="button" id="gebruikClickSword">GEBRUIKEN</a>
+        </div>
+
+        <div data-role="footer">
+        </div>
+
+    </div>
+
+    <div data-role="page" id="diamanten">
+
+        <div data-role="header">
+            <h2>DIAMONDS</h2>
+        </div>
+
+        <div data-role="content">
+            <h3>DIAMONDS</h3>
+            <p class="diamonds"></p>
+            <p>Gain instantly gold. (Cost 25 diamonds)</p>
+            <a data-role="button" id="goldWithDiamonds">BUY</a>
+            <p>Gain Hero Souls instantly. (Cost 50 diamonds)</p>
+            <a data-role="button" id="heroSoulsWithDiamonds">BUY</a>
+            <p>Gain a random number of potions and/or swords. (Cost 10 diamonds)</p>
+            <a data-role="button" id="inventoryWithDiamonds">BUY</a>
+            <p id="gekregen"></p>
+        </div>
+
+        <div data-role="footer">
+        </div>
+
+    </div>
+
+    <div data-role="page" id="souls">
+
+        <div data-role="header">
+            <h2>HEROSOULS</h2>
+        </div>
+
+        <div data-role="content">
+            <h3>HERO SOULS</h3>
+            <p class="herosouls"></p>
+            <p id="krijgherosouls"></p>
+            <a data-role="button" id="ascensionbutton">ASCEND</a>
+            <p id="ancient1">Increase the click damage with 15%. Don't lose when ascending. (LVL: Cost for upgrading: )</p>
+            <a data-role="button" id="clickWithHerosouls">BUY</a>
+            <p id="ancient2">Increase the damage per seconde with 15%. Don't lose when ascending. (LVL: Cost for upgrading: )</p>
+            <a data-role="button" id="damageWithHerosouls">BUY</a>
+        </div>
+
+        <div data-role="footer">
+        </div>
+
+    </div>
+    
+    <div data-role="page" id="stat">
+
+        <div data-role="header">
+            <h2>STATS</h2>
+        </div>
+
+        <div data-role="content">
+            <p id="statstotalclicks"></p>
+            <p id="statsmonsterkills"></p>
+            <p id="statsbosskills"></p>
+            <p id="statsacensions"></p>
+            <p id="statshighestzone"></p>
+        </div>
+
+        <div data-role="footer">
+        </div>
+
+    </div>
+
+    <script src="JS/GameCodev2.js" type="text/javascript"></script>
+</body>
+
+</html>
