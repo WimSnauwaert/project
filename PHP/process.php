@@ -50,7 +50,8 @@
             'statsmonsterskills'=> 0,
             'statsbosskills'=> 0,
             'statsascensions'=> 0,
-            'statshighestlvl'=> 0
+            'statshighestlvl'=> 0,
+            'getherosouls'=> 0
 	   );
       
       /*
