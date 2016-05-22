@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Project MI2</title>
     <link rel="stylesheet" type="text/css" href="JS/jquery.mobile-1.4.5.css"/>
     <link rel="stylesheet" type="text/css" href="CSS/style.css">
@@ -349,7 +350,7 @@ $(document).ready(function() {
                 <br/>
                 <input type="text" name="user" id="user" /> Paswoord:
                 <br>
-                <input type="text" name="pass" id="password" />
+                <input type="password" name="pass" id="password" />
                 <a href="" data-role="button" id="speel">SPEEL</a>
             </form>
         </div>
@@ -374,7 +375,7 @@ $(document).ready(function() {
                 <p id="userError"></p>
                 Paswoord:
                 <br/>
-                <input type="text" name="passR" id="registreerPass" />
+                <input type="password" name="passR" id="registreerPass" />
                 <p id="passError"></p>
                 <br/>
                 <input type="submit" id="registreer" value="Registreer"/>
@@ -397,7 +398,6 @@ $(document).ready(function() {
             <section id="stats">
                 <section class="fullWidth">
                     <h3>GOLD</h3>
-                    <p class="kak"></p>
                     <p class="gold"></p>
                 </section>
                 <section class="fourthWidth">
@@ -430,14 +430,16 @@ $(document).ready(function() {
                 </section>
             </section>
             </section>
-            
-            <section id="volledigLeven">
-                <div id="huidigLeven"></div>
-            </section>
-            
-            <p class="fullWidth" id="leven"></p>
-            <section id="monster">
-            </section>
+
+            <div id="monsterContainer">
+                <section id="monster">
+                    <img id="mob" src='IMG/monster1.png'/>
+                </section>
+                <section id="volledigLeven">
+                    <div id="huidigLeven"></div>
+                </section>
+                <p class="fullWidth" id="leven"></p>
+            </div>
             <section>
                 <p id="test"></p>
                 <p id="timer"></p>
